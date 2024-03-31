@@ -1,4 +1,5 @@
 const express = require("express");
+const bodyParser = require("body-parser");
 const cors = require("cors");
 const router = require("./router/router")
 const dotenv = require("dotenv");
@@ -7,7 +8,7 @@ dotenv.config();
 const PORT = process.env.PORT || 5000;
 
 const app = express();
-
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(express.json());
 app.use("/", router)

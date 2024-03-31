@@ -1,0 +1,21 @@
+{
+  "name": "list_of_products",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.18.3",
+    "md5": "^2.3.0",
+    "mongoose": "^8.2.2",
+    "nodemon": "^3.1.0"
+  }
+}

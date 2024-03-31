@@ -1,16 +1,16 @@
 const express = require("express");
 const cors = require("cors");
+const router = require("./router/router")
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 dotenv.config();
-const router = express.Router();
 const PORT = process.env.PORT || 5000;
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-// app.use("/", router);
+app.use("/", router)
 
 const start = async () => {
   try {

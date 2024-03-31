@@ -12,6 +12,23 @@ const port = 41000;
 //   action: "get_ids",
 //   params: { offset: 0 },
 // });
+// const options = { 
+//   hostname: url,
+//     port: port,
+//     path: "/",
+//     method: "POST",
+//     headers: {
+//       "Content-Type": "application/json",
+//       "X-Auth": md5(
+//         `${process.env.SERVER_KEY}_${new Date()
+//           .toISOString()
+//           .slice(0, 10)
+//           .replace(/-/g, "")}`
+//       ),
+//       "Content-Length": data.length,
+//     },
+//     body: data,
+//   }
 
 // const getAllIds = async () => {
 //   ids = await Ids.find();
@@ -46,7 +63,7 @@ const fetchGoodsAndSaveToMongoDB = async () => {
     parseIds = await Ids.find();
   }
   let options;
-  if (parseIds[0].ids.length) {
+  if (parseIds.length) {
     const ids = parseIds[0].ids;
     options = await getOptions(ids);
 
@@ -99,8 +116,8 @@ const fetchIdsAndSaveToMongoDB = async () => {
 
     res.on("end", async () => {
       const responseJson = JSON.parse(responseData);
-      const uniqueIds = Array.from(new Set(responseJson.result));
-      const newIds = new Ids({ ids: uniqueIds });
+      // const uniqueIds = Array.from(new Set(responseJson.result));
+      const newIds = new Ids({ ids: responseJson.result });
       await newIds.save();
 
       console.log(
@@ -117,4 +134,4 @@ const fetchIdsAndSaveToMongoDB = async () => {
   req.write(data);
   req.end();
 };
-module.exports = fetchGoodsAndSaveToMongoDB, fetchIdsAndSaveToMongoDB;
+module.exports = fetchGoodsAndSaveToMongoDB;

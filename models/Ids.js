@@ -1,7 +1,7 @@
 const { Schema, model } = require("mongoose");
 
 const Ids = new Schema({
-  ids: [{ type: String, ref: "Id" }],
+  ids: { type: Object, ref: "Id" },
 });
 
 module.exports = model("Ids", Ids);

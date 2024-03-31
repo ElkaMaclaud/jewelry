@@ -26,7 +26,8 @@ class Controller {
     try {
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
-      const ids = await Ids.find().skip(offset).limit(limit);
+      const parseIds = await Ids.find().limit(limit);
+      // const ids = parseIds[0].ids
       res.json({
         success: true,
         result: ids,
@@ -74,11 +75,12 @@ class Controller {
   }
   async getItems(req, res) {
     try {
+      console.log("/////////////////////", this.params.ids);
       const limit = parseInt(req.query.limit) || 100;
       const goods = await Goods.find({ id: { $in: this.params.ids } }).limit(
         limit
       );
-
+        console.log("/////////////////////", goods);
       res.json({
         success: true,
         result: goods,

@@ -1,3 +1,8 @@
+// Этот контроллер предназначен для работы с первичном бэком для копирования из него всех данных в свою БД
+// После сохранения всех данных в своей БД этот модуль будет не нужен
+// На данном этапе требуется доработка моделей 
+// Данные функции нужно будет вызвать поочереди после подключения к MongoDB - это костыль (но нужно будет сделать всего раз)
+
 const Ids = require("../models/Ids");
 const Goods = require("../models/Goods");
 const https = require("https");
@@ -58,6 +63,7 @@ const getOptions = async (ids) => {
   };
 };
 const fetchGoodsAndSaveToMongoDB = async () => {
+  // Функция получения всех товаров из первичного бэка и сохранения данных в свою БД
   let parseIds = [];
   while (!parseIds.length) {
     parseIds = await Ids.find();
@@ -107,6 +113,7 @@ const fetchGoodsAndSaveToMongoDB = async () => {
   }
 };
 const fetchIdsAndSaveToMongoDB = async () => {
+  // Функция получения всех айдишек из первичного бэка и сохранения данных в свою БД для дальнейшего получения всех товаров
   const req = https.request(options, async (res) => {
     let responseData = "";
 
@@ -120,10 +127,7 @@ const fetchIdsAndSaveToMongoDB = async () => {
       const newIds = new Ids({ ids: responseJson.result });
       await newIds.save();
 
-      console.log(
-        "Данные успешно сохранены в MongoDB:",
-        responseJson
-      );
+      console.log("Данные успешно сохранены в MongoDB:", responseJson);
     });
   });
 
@@ -134,4 +138,4 @@ const fetchIdsAndSaveToMongoDB = async () => {
   req.write(data);
   req.end();
 };
-module.exports = fetchGoodsAndSaveToMongoDB;
+module.exports = { fetchIdsAndSaveToMongoDB, fetchGoodsAndSaveToMongoDB };

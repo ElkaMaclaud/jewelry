@@ -1,10 +1,10 @@
 // Этот контроллер предназначен для работы с первичном бэком для копирования из него всех данных в свою БД
 // После сохранения всех данных в своей БД этот модуль будет не нужен
-// На данном этапе требуется доработка моделей 
+// На данном этапе требуется доработка моделей
 // Данные функции нужно будет вызвать поочереди после подключения к MongoDB - это костыль (но нужно будет сделать всего раз)
 
-const Ids = require("../models/Ids");
-const Goods = require("../models/Goods");
+const Id = require("../models/Id");
+const Good = require("../models/Good");
 const https = require("https");
 const md5 = require("md5");
 const dotenv = require("dotenv");
@@ -17,26 +17,26 @@ const port = 41000;
 //   action: "get_ids",
 //   params: { offset: 0 },
 // });
-// const options = { 
+// const options = {
 //   hostname: url,
-//     port: port,
-//     path: "/",
-//     method: "POST",
-//     headers: {
-//       "Content-Type": "application/json",
-//       "X-Auth": md5(
-//         `${process.env.SERVER_KEY}_${new Date()
-//           .toISOString()
-//           .slice(0, 10)
-//           .replace(/-/g, "")}`
-//       ),
-//       "Content-Length": data.length,
-//     },
-//     body: data,
-//   }
+//   port: port,
+//   path: "/",
+//   method: "POST",
+//   headers: {
+//     "Content-Type": "application/json",
+//     "X-Auth": md5(
+//       `${process.env.SERVER_KEY}_${new Date()
+//         .toISOString()
+//         .slice(0, 10)
+//         .replace(/-/g, "")}`
+//     ),
+//     "Content-Length": data.length,
+//   },
+//   body: data,
+// };
 
 // const getAllIds = async () => {
-//   ids = await Ids.find();
+//   ids = await Id.find();
 //   console.log("Данные успешно получены:", ids[1]);
 // };
 const getOptions = async (ids) => {
@@ -66,11 +66,11 @@ const fetchGoodsAndSaveToMongoDB = async () => {
   // Функция получения всех товаров из первичного бэка и сохранения данных в свою БД
   let parseIds = [];
   while (!parseIds.length) {
-    parseIds = await Ids.find();
+    parseIds = await Id.find();
   }
   let options;
   if (parseIds.length) {
-    const ids = parseIds[0].ids;
+    const ids = parseIds.map(i=>i.id);
     options = await getOptions(ids);
 
     const req = https.request(options, async (res) => {
@@ -81,25 +81,27 @@ const fetchGoodsAndSaveToMongoDB = async () => {
       });
 
       res.on("end", async () => {
-        const responseJson = JSON.parse(responseData).result;
-        const items = responseJson.filter(
-          (elem, index, self) =>
-            index === self.findIndex((i) => i.id === elem.id)
-        );
+        const responseJson = JSON.parse(responseData);
+        //console.log("///////////////////", responseJson.result[56]);
+        // const items = responseJson.filter(
+        //   (elem, index, self) =>
+        //     index === self.findIndex((i) => i.id === elem.id)
+        // );
         // const set = new Set()
         // responseJson.forEach(elem => {
         //   if(!set.has(elem.id)) {
         //     set.add(elem.id)
         //     items.push(elem)
-        //   } 
+        //   }
         // });
-         
-        const goods = new Goods({goods: items});
-        await goods.save();
+
+        // const goods = new Good(items);
+        // await goods.save();
+        await Good.insertMany(responseJson.result);
 
         console.log(
           "Данные успешно сохранены в MongoDB:",
-          responseJson.length, items.length
+          responseJson.result.length
         );
       });
     });
@@ -124,12 +126,12 @@ const fetchIdsAndSaveToMongoDB = async () => {
     res.on("end", async () => {
       const responseJson = JSON.parse(responseData);
       // const uniqueIds = Array.from(new Set(responseJson.result));
-      const newIds = new Ids({ ids: responseJson.result });
-      await newIds.save();
-
-      console.log("Данные успешно сохранены в MongoDB:", responseJson);
+      const ids = responseJson.result.map((str) => ({ id: str }));
+      await Id.insertMany(ids);
+      console.log("Данные успешно сохранены в MongoDB:", ids.length, ids[8003]);
     });
   });
+
 
   req.on("error", (error) => {
     console.error(error);
@@ -138,4 +140,4 @@ const fetchIdsAndSaveToMongoDB = async () => {
   req.write(data);
   req.end();
 };
-module.exports = { fetchIdsAndSaveToMongoDB, fetchGoodsAndSaveToMongoDB };
+module.exports = fetchGoodsAndSaveToMongoDB;

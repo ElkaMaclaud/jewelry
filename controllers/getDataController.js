@@ -82,7 +82,6 @@ const fetchGoodsAndSaveToMongoDB = async () => {
 
       res.on("end", async () => {
         const responseJson = JSON.parse(responseData);
-        //console.log("///////////////////", responseJson.result[56]);
         // const items = responseJson.filter(
         //   (elem, index, self) =>
         //     index === self.findIndex((i) => i.id === elem.id)

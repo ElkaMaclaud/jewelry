@@ -20,8 +20,6 @@ const start = async () => {
       `mongodb+srv://${process.env.MONGO_USER}:${process.env.PASSWORD}@cluster0.sytqp8w.mongodb.net/jewelry`
     );
     app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
-    //await fetchIdsAndSaveToMongoDB()
-    //await fetchGoodsAndSaveToMongoDB();
   } catch (e) {
     console.log(e);
   }

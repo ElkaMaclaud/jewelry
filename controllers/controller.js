@@ -1,5 +1,7 @@
 const path = require("path");
 const md5 = require("md5");
+const Id = require("../models/Id");
+const Good = require("../models/Good");
 
 
 class Controller {
@@ -24,8 +26,15 @@ class Controller {
     try {
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
-      const parseIds = await Ids.find().limit(limit);
-      // const ids = parseIds[0].ids
+      //const ids = await Id.distinct("id")
+      const idsArray = await Id.aggregate([
+        { $group: { _id: null, ids: { $push: "$id" } } },
+        { $project: { _id: 0, ids: 1 } },
+        { $skip: offset }, 
+        { $limit: limit }, 
+      ]);
+
+      const ids = idsArray[0].ids;
       res.json({
         success: true,
         result: ids,
@@ -39,7 +48,7 @@ class Controller {
   }
   async getFilterIds(req, res) {
     try {
-      const ids = await Goods.find({ ...this.params }, "id");
+      const ids = await Good.find({ ...this.params }, "id");
 
       res.json({
         success: true,
@@ -56,7 +65,7 @@ class Controller {
     try {
       const offset = parseInt(req.query.offset) || 0;
       const limit = parseInt(req.query.limit) || 50;
-      const fields = await Goods.find({}, `${this.params["field"]}`)
+      const fields = await Good.find({}, `${this.params["field"]}`)
         .skip(offset)
         .limit(limit);
 
@@ -73,12 +82,10 @@ class Controller {
   }
   async getItems(req, res) {
     try {
-      console.log("/////////////////////", this.params.ids);
       const limit = parseInt(req.query.limit) || 100;
-      const goods = await Goods.find({ id: { $in: this.params.ids } }).limit(
+      const goods = await Good.find({ id: { $in: this.params.ids } }).limit(
         limit
       );
-        console.log("/////////////////////", goods);
       res.json({
         success: true,
         result: goods,

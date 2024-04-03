@@ -1,7 +1,7 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-//const router = require("./router/router");
+const router = require("./router/router");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const fetchGoodsAndSaveToMongoDB = require("./controllers/getDataController");
@@ -12,7 +12,7 @@ const app = express();
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(cors());
 app.use(express.json());
-// app.use("/", router);
+app.use("/", router);
 
 const start = async () => {
   try {

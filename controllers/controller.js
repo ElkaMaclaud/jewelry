@@ -65,10 +65,13 @@ class Controller {
     try {
       const offset = parseInt(req.query.offset) || 0;
       const limit = parseInt(req.query.limit) || 50;
-      const fields = await Good.find({}, `${this.params["field"]}`)
-        .skip(offset)
-        .limit(limit);
-
+      const fieldsArray = await Good.aggregate([
+        { $group: { _id: null, fields: { $push: `$${this.params.field}` } } },
+        { $project: { _id: 0, fields: 1 } },
+        { $skip: offset },
+        { $limit: limit },
+      ]);
+      const fields = fieldsArray[0].fields
       res.json({
         success: true,
         result: fields,

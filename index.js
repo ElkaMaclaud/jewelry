@@ -4,7 +4,6 @@ const cors = require("cors");
 const router = require("./router/router");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
-const fetchGoodsAndSaveToMongoDB = require("./controllers/getDataController");
 dotenv.config();
 const PORT = process.env.PORT || 5000;
 

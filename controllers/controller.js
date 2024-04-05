@@ -20,19 +20,12 @@ class Controller {
     this.req = req;
     this.action = req.body.action || "";
     this.params = req.body.params || {};
-    this.getCheckSecretStamp();
   }
-  async getCheckSecretStamp(req, res) {
-    if (this.timestamp !== this.timestamp) {
-      res.status(403).json({ success: false, message: "Нет доступа" });
-    }
-  }
+
   async getIds(req, res) {
     try {
-      this.getCheckSecretStamp();
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
-      //const ids = await Id.distinct("id")
       const idsArray = await Id.aggregate([
         { $group: { _id: null, ids: { $push: "$id" } } },
         { $project: { _id: 0, ids: 1 } },
@@ -54,7 +47,6 @@ class Controller {
   }
   async getFilterIds(req, res) {
     try {
-      this.getCheckSecretStamp();
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
       const key = Object.keys(this.params).find(
@@ -86,7 +78,6 @@ class Controller {
   }
   async getFields(req, res) {
     try {
-      this.getCheckSecretStamp();
       const offset = parseInt(req.query.offset) || 0;
       const limit = parseInt(req.query.limit) || 50;
       const fieldsArray = await Good.aggregate([
@@ -109,7 +100,6 @@ class Controller {
   }
   async getItems(req, res) {
     try {
-      this.getCheckSecretStamp();
       const limit = parseInt(req.query.limit) || 100;
       const goods = await Good.find({ id: { $in: this.params.ids } }).limit(
         limit

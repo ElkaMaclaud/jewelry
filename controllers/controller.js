@@ -60,8 +60,13 @@ class Controller {
       const key = Object.keys(this.params).find(
         (key) => key !== "offset" && key !== "limit"
       );
+      const searchKey =
+        key === "product"
+          ? { [key]: { $regex: this.params[key], $options: "i" } }
+          : { [key]: this.params[key] };
+          
       const idsSelected = await Good.aggregate([
-        { $match: { [key]: this.params[key] } },
+        { $match: searchKey },
         { $group: { _id: null, ids: { $push: "$id" } } },
         { $project: { _id: 0, ids: 1 } },
         { $skip: offset },

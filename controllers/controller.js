@@ -1,5 +1,4 @@
 const path = require("path");
-const md5 = require("md5");
 const Id = require("../models/Id");
 const Good = require("../models/Good");
 
@@ -10,13 +9,6 @@ class Controller {
   params = {};
 
   constructor(req) {
-    this.xAuthTimestamp = req.header("X-Auth");
-    this.timestamp = md5(
-      `${process.env.SERVER_KEY}_${new Date()
-        .toISOString()
-        .slice(0, 10)
-        .replace(/-/g, "")}`
-    );
     this.req = req;
     this.action = req.body.action || "";
     this.params = req.body.params || {};

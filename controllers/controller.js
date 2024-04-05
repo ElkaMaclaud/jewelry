@@ -61,13 +61,13 @@ class Controller {
         (key) => key !== "offset" && key !== "limit"
       );
       const idsSelected = await Good.aggregate([
-        { $match: { key: this.params[key] } },
+        { $match: { [key]: this.params[key] } },
         { $group: { _id: null, ids: { $push: "$id" } } },
         { $project: { _id: 0, ids: 1 } },
         { $skip: offset },
         { $limit: limit },
       ]);
-      const ids = idsSelected.length > 0 ? idsArray[0].ids : [];
+      const ids = idsSelected.length > 0 ? idsSelected[0].ids : [];
       res.json({
         success: true,
         result: ids,

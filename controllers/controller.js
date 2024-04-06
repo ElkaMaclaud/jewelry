@@ -4,7 +4,6 @@ const Good = require("../models/Good");
 
 class Controller {
   req;
-  body = {};
   action = "";
   params = {};
 
@@ -13,7 +12,24 @@ class Controller {
     this.action = req.body.action || "";
     this.params = req.body.params || {};
   }
-
+  async handleRequest(req, res) {
+    switch (this.action) {
+      case "get_ids":
+        this.getIds(req, res);
+        break;
+      case "filter":
+        this.getFilterIds(req, res);
+        break;
+      case "get_fields":
+        this.getFields(req, res);
+        break;
+      case "get_items":
+        this.getItems(req, res);
+        break;
+      default:
+        res.status(400).json({ success: false, message: "Неверное действие" });
+    }
+  }
   async getIds(req, res) {
     try {
       const offset = parseInt(this.params.offset) || 0;
@@ -48,7 +64,7 @@ class Controller {
         key === "product"
           ? { [key]: { $regex: this.params[key], $options: "i" } }
           : { [key]: this.params[key] };
-          
+
       const idsSelected = await Good.aggregate([
         { $match: searchKey },
         { $group: { _id: null, ids: { $push: "$id" } } },

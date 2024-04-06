@@ -1,8 +1,8 @@
-const path = require("path");
 const Id = require("../models/Id");
 const Good = require("../models/Good");
 
 class Controller {
+  //static reqCount = 0;
   req;
   res;
   action = "";
@@ -10,11 +10,17 @@ class Controller {
 
   constructor(req, res) {
     this.req = req;
-    this.res = res
+    this.res = res;
     this.action = req.body.action || "";
     this.params = req.body.params || {};
-    this.handleRequest(req, res)
+    // Controller.incrementRequestCount();
+    this.handleRequest(req, res);
   }
+
+  // static incrementRequestCount() {
+  //   return ++Controller.reqCount;
+  // }
+
   async handleRequest(req, res) {
     switch (this.action) {
       case "get_ids":
@@ -33,7 +39,7 @@ class Controller {
         res.status(400).json({ success: false, message: "Неверное действие" });
     }
   }
-  async getIds(req, res) {
+  async getIds(_, res) {
     try {
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
@@ -56,7 +62,7 @@ class Controller {
         .json({ success: false, message: "Ошибка получения данных" });
     }
   }
-  async getFilterIds(req, res) {
+  async getFilterIds(_, res) {
     try {
       const offset = parseInt(this.params.offset) || 0;
       const limit = parseInt(this.params.limit) || 50;
@@ -87,10 +93,10 @@ class Controller {
         .json({ success: false, message: "Ошибка получения данных" });
     }
   }
-  async getFields(req, res) {
+  async getFields(_, res) {
     try {
-      const offset = parseInt(req.query.offset) || 0;
-      const limit = parseInt(req.query.limit) || 50;
+      const offset = parseInt(this.params.offset) || 0;
+      const limit = parseInt(this.params.limit) || 50;
       const fieldsArray = await Good.aggregate([
         { $group: { _id: null, fields: { $push: `$${this.params.field}` } } },
         { $project: { _id: 0, fields: 1 } },
@@ -109,9 +115,9 @@ class Controller {
         .json({ success: false, message: "Ошибка получения данных" });
     }
   }
-  async getItems(req, res) {
+  async getItems(_, res) {
     try {
-      const limit = parseInt(req.query.limit) || 100;
+      const limit = parseInt(this.params.limit) || 100;
       const goods = await Good.find({ id: { $in: this.params.ids } }).limit(
         limit
       );

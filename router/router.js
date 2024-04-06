@@ -4,8 +4,7 @@ const express = require("express");
 const router = express.Router();
 
 router.post("/", authMiddleware, async (req, res) => {
-  const controller = new Controller(req);
-  await controller.handleRequest(req, res);
+  new Controller(req, res);
 });
 
 module.exports = router;

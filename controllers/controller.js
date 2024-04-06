@@ -4,13 +4,16 @@ const Good = require("../models/Good");
 
 class Controller {
   req;
+  res;
   action = "";
   params = {};
 
-  constructor(req) {
+  constructor(req, res) {
     this.req = req;
+    this.res = res
     this.action = req.body.action || "";
     this.params = req.body.params || {};
+    this.handleRequest(req, res)
   }
   async handleRequest(req, res) {
     switch (this.action) {

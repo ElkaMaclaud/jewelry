@@ -109,7 +109,6 @@ const fetchGoodsAndSaveToMongoDB = async () => {
       console.error(error);
     });
 
-    req.write(options.body);
     req.end();
   }
 };
@@ -136,7 +135,6 @@ const fetchIdsAndSaveToMongoDB = async () => {
     console.error(error);
   });
 
-  req.write(data);
   req.end();
 };
 module.exports = fetchGoodsAndSaveToMongoDB;
